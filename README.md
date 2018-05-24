@@ -2,7 +2,7 @@
 
 Peer-sim simulation of the Snob model
 
-# Install
+# Usage
 
 ```
 mvn install
