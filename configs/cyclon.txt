@@ -1,0 +1,47 @@
+# network size
+SIZE 100000
+DEGREE 9
+
+# parameters of periodic execution
+CYCLES 310
+
+random.seed 1237567890
+network.size SIZE
+simulation.endtime CYCLES
+simulation.logtime 1
+
+################### protocols ===========================
+protocol.link peersim.core.IdleProtocol
+
+protocol.rps snob.simulation.cyclon.Cyclon
+protocol.rps.c DEGREE
+protocol.rps.l 4
+protocol.rps.delta 1
+protocol.rps.step 1
+protocol.rps.start 2
+protocol.rps.linkable link
+protocol.rps.fail 0.000
+
+control.o1 snob.simulation.controllers.DynamicNetwork
+control.o1.protocol rps
+control.o1.FINAL
+control.o1.step 30
+#control.o1.addingPerStep 10000
+control.o1.addingPerStepPerc 1
+control.o1.startAdd 0
+#control.o1.endAdd 90
+
+################### initialization ======================
+
+init.sch peersim.edsim.CDScheduler
+init.sch.protocol rps
+init.sch.randstart
+
+##### Controls #####
+
+
+control.0 snob.simulation.observers.Observer
+control.0.program snob.simulation.observers.program.AvgShortestPathProgram
+control.0.protocol rps
+control.0.FINAL
+control.0.step 1
