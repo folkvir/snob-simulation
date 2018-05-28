@@ -1,8 +1,4 @@
-package snob.simulation.cyclon;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+package snob.simulation.son;
 
 import peersim.config.Configuration;
 import peersim.core.CommonState;
@@ -11,12 +7,14 @@ import snob.simulation.rps.ARandomPeerSamplingProtocol;
 import snob.simulation.rps.IMessage;
 import snob.simulation.rps.IRandomPeerSampling;
 
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * The Son protocol
  */
-public class Cyclon extends ARandomPeerSamplingProtocol implements
-		IRandomPeerSampling {
-
+public class Son extends ARandomPeerSamplingProtocol implements IRandomPeerSampling {
 	// #A the names of the parameters in the configuration file of peersim
 	private static final String PAR_C = "c"; // max partial view size
 	private static final String PAR_L = "l"; // shuffle size
@@ -26,25 +24,24 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 	private static int l;
 
 	// #C local variables
-	private CyclonPartialView partialView;
+	private SonPartialView partialView;
 	private static int RND_WALK = 5;
-
 	/**
 	 * Construction of a Son instance
 	 * 
 	 * @param prefix
 	 *            the peersim configuration
 	 */
-	public Cyclon(String prefix) {
+	public Son(String prefix) {
 		super(prefix);
-		Cyclon.c = Configuration.getInt(prefix + "." + PAR_C);
-		Cyclon.l = Configuration.getInt(prefix + "." + PAR_L);
-		this.partialView = new CyclonPartialView(Cyclon.c, Cyclon.l);
+		Son.c = Configuration.getInt(prefix + "." + PAR_C);
+		Son.l = Configuration.getInt(prefix + "." + PAR_L);
+		this.partialView = new SonPartialView(Son.c, Son.l);
 	}
 
-	public Cyclon() {
+	public Son() {
 		super();
-		this.partialView = new CyclonPartialView(Cyclon.c, Cyclon.l);
+		this.partialView = new SonPartialView(Son.c, Son.l);
 	}
 
 	@Override
@@ -59,15 +56,14 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 		if (this.isUp() && this.partialView.size() > 0) {
 			this.partialView.incrementAge();
 			Node q = this.partialView.getOldest();
-			Cyclon qCyclon = (Cyclon) q
-					.getProtocol(ARandomPeerSamplingProtocol.pid);
-			if (qCyclon.isUp() && !this.pFail(null)) {
+			Son qSon = (Son) q.getProtocol(ARandomPeerSamplingProtocol.pid);
+			if (qSon.isUp() && !this.pFail(null)) {
 				// #A if the chosen peer is alive, initiate the exchange
 				List<Node> sample = this.partialView.getSample(this.node, q,
 						true);
 				sample.add(this.node);
-				IMessage received = qCyclon.onPeriodicCall(this.node,
-						new CyclonMessage(sample));
+				IMessage received = qSon.onPeriodicCall(this.node,
+						new SonMessage(sample));
 				List<Node> samplePrime = (List<Node>) received.getPayload();
 				this.partialView.mergeSample(this.node, q, samplePrime, sample,
 						true);
@@ -83,7 +79,7 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 				false);
 		this.partialView.mergeSample(this.node, origin,
 				(List<Node>) message.getPayload(), samplePrime, false);
-		return new CyclonMessage(samplePrime);
+		return new SonMessage(samplePrime);
 	}
 
 	public void join(Node joiner, Node contact) {
@@ -91,10 +87,10 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 			this.node = joiner;
 		}
 		if (contact != null) { // the very first join does not have any contact
-			Cyclon contactCyclon = (Cyclon) contact.getProtocol(Cyclon.pid);
+			Son contactSon = (Son) contact.getProtocol(Son.pid);
 			this.partialView.clear();
 			this.partialView.addNeighbor(contact);
-			contactCyclon.onSubscription(this.node);
+			contactSon.onSubscription(this.node);
 		}
 		this.isUp = true;
 	}
@@ -102,10 +98,10 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 	public void onSubscription(Node origin) {
 		List<Node> aliveNeighbors = this.getAliveNeighbors();
 		Collections.shuffle(aliveNeighbors, CommonState.r);
-		int nbRndWalk = Math.min(Cyclon.c - 1, aliveNeighbors.size());
+		int nbRndWalk = Math.min(Son.c - 1, aliveNeighbors.size());
 
 		for (int i = 0; i < nbRndWalk; ++i) {
-			randomWalk(origin, aliveNeighbors.get(i), Cyclon.RND_WALK);
+			randomWalk(origin, aliveNeighbors.get(i), Son.RND_WALK);
 		}
 	}
 
@@ -122,8 +118,8 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 	@Override
 	public IRandomPeerSampling clone() {
 		try {
-			Cyclon cyClone = new Cyclon();
-			cyClone.partialView = (CyclonPartialView) this.partialView.clone();
+			Son cyClone = new Son();
+			cyClone.partialView = (SonPartialView) this.partialView.clone();
 			return cyClone;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
@@ -143,9 +139,9 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 	 *            the current time-to-live before the subscription gets accepted
 	 */
 	private static void randomWalk(Node origin, Node current, int ttl) {
-		final Cyclon originCyclon = (Cyclon) origin.getProtocol(Cyclon.pid);
-		final Cyclon currentCyclon = (Cyclon) current.getProtocol(Cyclon.pid);
-		List<Node> aliveNeighbors = currentCyclon.getAliveNeighbors();
+		final Son originSon = (Son) origin.getProtocol(Son.pid);
+		final Son currentSon = (Son) current.getProtocol(Son.pid);
+		List<Node> aliveNeighbors = currentSon.getAliveNeighbors();
 		ttl -= 1;
 		// #A if the receiving peer has neighbors in its partial view
 		if (aliveNeighbors.size() > 0) {
@@ -159,14 +155,14 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 				// then
 				// accept the subscription and stop forwarding it
 				if (origin.getID() != current.getID()) {
-					Iterator<Node> iPeers = currentCyclon.getPeers(1)
+					Iterator<Node> iPeers = currentSon.getPeers(1)
 							.iterator();
 					if (iPeers.hasNext()) {
 						Node chosen = iPeers.next();
-						currentCyclon.partialView.removeNode(chosen);
-						originCyclon.partialView.addNeighbor(chosen);
+						currentSon.partialView.removeNode(chosen);
+						originSon.partialView.addNeighbor(chosen);
 					}
-					currentCyclon.addNeighbor(origin);
+					currentSon.addNeighbor(origin);
 				}
 			}
 		}

@@ -1,18 +1,18 @@
-package snob.simulation.cyclon;
-
-import java.util.List;
+package snob.simulation.son;
 
 import peersim.core.Node;
 import snob.simulation.rps.IMessage;
 
+import java.util.List;
+
 /**
  * Message containing the sample to exchange in Son
  */
-public class CyclonMessage implements IMessage {
+public class SonMessage implements IMessage {
 
 	private List<Node> sample;
 
-	public CyclonMessage(List<Node> sample) {
+	public SonMessage(List<Node> sample) {
 		this.sample = sample;
 	}
 
