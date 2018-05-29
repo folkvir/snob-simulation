@@ -118,9 +118,9 @@ public class Son extends ARandomPeerSamplingProtocol implements IRandomPeerSampl
 	@Override
 	public IRandomPeerSampling clone() {
 		try {
-			Son cyClone = new Son();
-			cyClone.partialView = (SonPartialView) this.partialView.clone();
-			return cyClone;
+			Son s = new Son();
+			s.partialView = (SonPartialView) this.partialView.clone();
+			return s;
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}

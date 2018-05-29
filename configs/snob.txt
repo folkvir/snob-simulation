@@ -1,6 +1,5 @@
 # network size
-SIZE 100000
-DEGREE 9
+SIZE 196
 
 # parameters of periodic execution
 CYCLES 100
@@ -13,19 +12,20 @@ simulation.logtime 1
 ################### protocols ===========================
 protocol.link peersim.core.IdleProtocol
 
-protocol.rps snob.simulation.cyclon.Cyclon
-protocol.rps.c DEGREE
-protocol.rps.l 4
-protocol.rps.delta 1
-protocol.rps.step 1
-protocol.rps.start 2
-protocol.rps.linkable link
-protocol.rps.fail 0.000
+protocol.son snob.simulation.cyclon.Cyclon
+protocol.son.c 5
+protocol.son.l 4
+protocol.son.delta 1
+protocol.son.step 1
+protocol.son.start 2
+protocol.son.linkable link
+protocol.son.fail 0.000
 
 control.o1 snob.simulation.controllers.DynamicNetwork
 control.o1.protocol rps
 control.o1.FINAL
 control.o1.step 30
+# will add directly all nodes to the system instead of adding periodically N nodes out of SIZE nodes
 control.o1.addingPerStep SIZE
 #control.o1.addingPerStepPerc 1
 control.o1.startAdd 0
@@ -41,7 +41,7 @@ init.sch.randstart
 
 
 control.0 snob.simulation.observers.Observer
-control.0.program snob.simulation.observers.program.VarianceAndArcCountProgram
-control.0.protocol rps
+control.0.program snob.simulation.observers.program.SnobProgram
+control.0.protocol son
 control.0.FINAL
 control.0.step 1

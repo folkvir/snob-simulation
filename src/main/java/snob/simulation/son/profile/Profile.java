@@ -24,7 +24,7 @@ public class Profile {
     }
 
     public void update(String query) {
-        System.out.println("Updating the profile with: " + query);
+        // System.out.println("Updating the profile with: " + query);
         Query q = QueryFactory.create(query);
         ElementWalker.walk(q.getQueryPattern(), new ElementVisitorBase() {
             @Override
@@ -53,7 +53,6 @@ public class Profile {
             while(!stop && ittpqs.hasNext()) {
                 Triple us = ittpqs.next();
                 if (this.equivalence(us, pt)) {
-                    // System.out.println("Equivalence.");
                     stop = true; // we have the highest score, stop or it will cause an overflow
                 } else if (this.containment(us, pt)) {
                     try {
@@ -61,20 +60,17 @@ public class Profile {
                     } catch (ArithmeticException e) {
                         stop = true;
                     }
-                    // System.out.println("Containment." + stop);
                 } else if (this.subset(us, pt)) {
                     try {
                         score = Math.addExact(score, WEIGH_SUBSET);
                     } catch (ArithmeticException e) {
                         stop = true;
                     }
-                    // System.out.println("Subset." + stop);
                 }
-                // System.out.println("" + it.hasNext() + ittpqs.hasNext() + stop);
             }
         }
         if(stop) {
-            return Integer.MAX_VALUE;
+            return WEIGH_EQUIVALENCE;
         }
         return score;
     }

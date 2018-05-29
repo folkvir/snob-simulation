@@ -3,9 +3,17 @@ package snob.simulation;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.util.NodeFactoryExtra;
 import org.junit.Assert;
 import org.junit.Test;
+import snob.simulation.son.Datastore;
 import snob.simulation.son.profile.Profile;
+
+import java.util.Iterator;
 
 /**
  * Unit test for simple App.
@@ -42,11 +50,11 @@ public class AppTest
                 "}";
         Profile p = new Profile();
         p.update(query);
-        System.out.println(p.tpqs.toString());
+        // System.out.println(p.tpqs.toString());
 
         Profile p2 = new Profile();
         p2.update(query);
-        System.out.println(p2.tpqs.toString());
+        // System.out.println(p2.tpqs.toString());
 
         Assert.assertEquals(Integer.MAX_VALUE, p.score(p2));
     }
@@ -69,11 +77,11 @@ public class AppTest
                 "}";
         Profile p = new Profile();
         p.update(query);
-        System.out.println(p.tpqs.toString());
+        // System.out.println(p.tpqs.toString());
 
         Profile p2 = new Profile();
         p2.update(query2);
-        System.out.println(p2.tpqs.toString());
+        // System.out.println(p2.tpqs.toString());
 
         Assert.assertEquals(2, p.score(p2));
     }
@@ -97,12 +105,34 @@ public class AppTest
                 "}";
         Profile p = new Profile();
         p.update(query);
-        System.out.println(p.tpqs.toString());
+        // System.out.println(p.tpqs.toString());
 
         Profile p2 = new Profile();
         p2.update(query2);
-        System.out.println(p2.tpqs.toString());
+        // System.out.println(p2.tpqs.toString());
 
         Assert.assertEquals(3, p.score(p2));
+    }
+
+    /**
+     * Update fonction of profile should extract tpq
+     */
+    @Test
+    public void DatastoreShouldBeQueryiable()
+    {
+        Datastore d = new Datastore();
+        d.update("./datasets/test.ttl");
+        Triple t = new Triple(Var.alloc("s"),
+                Var.alloc("p"),
+                Var.alloc("o"));
+        // System.out.println("Creating the triple pattern: "+t.toString());
+
+        Iterator<Triple> it = d.getTriplesMatchingTriplePattern(t);
+        int count = 0;
+        while(it.hasNext()) {
+            it.next();
+            count++;
+        }
+        Assert.assertEquals(3, count);
     }
 }
