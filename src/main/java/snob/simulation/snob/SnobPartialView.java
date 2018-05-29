@@ -35,7 +35,6 @@ public class SnobPartialView extends AAgingPartialView {
 	public List<Node> getSample(Node caller, Node neighbor, boolean isInitiator) {
 		ArrayList<Node> sample = new ArrayList<Node>();
 		ArrayList<Node> clone = new ArrayList<Node>(this.partialView);
-
 		int sampleSize = clone.size();
 		if (!isInitiator) { // called from the chosen peer
 			sampleSize = Math.min(sampleSize, SnobPartialView.l);

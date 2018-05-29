@@ -27,7 +27,7 @@ public abstract class ARandomPeerSamplingProtocol implements IDynamic,
 
 	// #C local variables
 	protected boolean isUp = false;
-	protected Node node = null;
+	public Node node = null;
 
 	/**
 	 * The outbound costs per each step

@@ -61,6 +61,21 @@ public class Datastore {
         return result;
     }
 
+    public ResultSet select(Query q) {
+        ResultSet result;
+        try{
+            this.dataset.begin(ReadWrite.READ);
+            Model tdb = this.dataset.getDefaultModel();
+            QueryExecution qe = QueryExecutionFactory.create(q, tdb);
+            result = qe.execSelect();
+        } catch(Exception e) {
+            throw e;
+        } finally {
+            this.dataset.end();
+        }
+        return result;
+    }
+
     public Model loadModel(String filename, Dataset dataset) {
         FileManager.get().readModel(dataset.getDefaultModel(), filename, "RDF/XML" );
         return dataset.getDefaultModel();

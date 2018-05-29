@@ -3,11 +3,9 @@ package snob.simulation.snob;
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Node;
-import snob.simulation.cyclon.Cyclon;
 import snob.simulation.rps.ARandomPeerSamplingProtocol;
 import snob.simulation.rps.IMessage;
 import snob.simulation.rps.IRandomPeerSampling;
-import snob.simulation.snob.profile.Profile;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -33,7 +31,7 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
     public static int sonl;
 
 	// Profile of the peer
-	public static Profile p;
+	public static Profile profile;
 
 	// #C local variables
     public SnobPartialView partialView;
@@ -54,6 +52,7 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
         Snob.son = Configuration.getBoolean(prefix + "." + PAR_SON);
 		this.partialView = new SnobPartialView(Snob.c, Snob.l);
         if(Snob.son) this.sonPartialView = new SonPartialView(Snob.sonc, Snob.sonl);
+        this.profile = new Profile();
 	}
 
 	public Snob() {
@@ -97,12 +96,12 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
             Snob qSonSnob = (Snob) qSon.getProtocol(ARandomPeerSamplingProtocol.pid);
             if (qSonSnob.isUp() && !this.pFail(null)) {
                 // #A if the chosen peer is alive, initiate the exchange
-                List<Node> sample = this.sonPartialView.getSample(this.node, qSon,
+                List<Node> sample = this.sonPartialView.getSample(this, qSon,
                         true);
                 sample.add(this.node);
                 IMessage received = qSonSnob.onPeriodicCallSon(this.node, new SnobMessage(sample));
                 List<Node> samplePrime = (List<Node>) received.getPayload();
-                this.sonPartialView.mergeSample(this.node, qSon, samplePrime, sample,true);
+                this.sonPartialView.mergeSample(this, qSon, samplePrime, sample,true);
             } else {
                 // #B if the chosen peer is dead, remove it from the view
                 this.sonPartialView.removeNode(qSon);
@@ -110,6 +109,7 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
         }
 		// perform the execution of all queries
         // ...
+        profile.executeAll();
 	}
 
 	public IMessage onPeriodicCall(Node origin, IMessage message) {
@@ -117,13 +117,14 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 				false);
 		this.partialView.mergeSample(this.node, origin,
 				(List<Node>) message.getPayload(), samplePrime, false);
+
 		return new SnobMessage(samplePrime);
 	}
 
     public IMessage onPeriodicCallSon(Node origin, IMessage message) {
-        List<Node> samplePrime = this.sonPartialView.getSample(this.node, origin,
+        List<Node> samplePrime = this.sonPartialView.getSample(this, origin,
                 false);
-        this.sonPartialView.mergeSample(this.node, origin,
+        this.sonPartialView.mergeSample(this, origin,
                 (List<Node>) message.getPayload(), samplePrime, false);
         return new SnobMessage(samplePrime);
     }

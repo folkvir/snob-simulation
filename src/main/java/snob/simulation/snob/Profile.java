@@ -1,16 +1,15 @@
-package snob.simulation.snob.profile;
+package snob.simulation.snob;
 
 
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
 import org.apache.jena.sparql.core.TriplePath;
 import org.apache.jena.sparql.syntax.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class Profile {
     public int WEIGH_EQUIVALENCE = Integer.MAX_VALUE;
@@ -18,14 +17,24 @@ public class Profile {
     public int WEIGH_SUBSET = 1;
 
     public List<Triple> tpqs;
+    public Map<UUID, Query> queries;
+    public Map<UUID, ResultSet> results;
+
+    // Datastore
+    public static Datastore datastore;
 
     public Profile() {
         this.tpqs = new ArrayList<>();
+        this.queries = new HashMap<>();
+        this.results = new HashMap<>();
+        this.datastore = new Datastore();
     }
 
     public void update(String query) {
         // System.out.println("Updating the profile with: " + query);
+        UUID id = UUID.randomUUID();
         Query q = QueryFactory.create(query);
+        queries.put(id, q);
         ElementWalker.walk(q.getQueryPattern(), new ElementVisitorBase() {
             @Override
             public void visit(ElementPathBlock elementTriplesBlock) {
@@ -35,6 +44,15 @@ public class Profile {
                 }
             }
         });
+    }
+
+    public void executeAll() {
+        Iterator<Map.Entry<UUID, Query>> it = this.queries.entrySet().iterator();
+        while(it.hasNext()){
+            Map.Entry e = it.next();
+            ResultSet res = this.datastore.select((Query) e.getValue());
+            this.results.put((UUID) e.getKey(), res);
+        }
     }
 
     /**

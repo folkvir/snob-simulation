@@ -8,7 +8,7 @@ import org.apache.jena.sparql.core.Var;
 import org.junit.Assert;
 import org.junit.Test;
 import snob.simulation.snob.Datastore;
-import snob.simulation.snob.profile.Profile;
+import snob.simulation.snob.Profile;
 
 import java.util.Iterator;
 
