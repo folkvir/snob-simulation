@@ -6,7 +6,7 @@ import peersim.core.Node;
 import snob.simulation.rps.IMessage;
 
 /**
- * Message containing the sample to exchange in Son
+ * Message containing the sample to exchange in Snob
  */
 public class CyclonMessage implements IMessage {
 

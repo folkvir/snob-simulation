@@ -3,15 +3,12 @@ package snob.simulation;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.graph.Triple;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.util.NodeFactoryExtra;
 import org.junit.Assert;
 import org.junit.Test;
-import snob.simulation.son.Datastore;
-import snob.simulation.son.profile.Profile;
+import snob.simulation.snob.Datastore;
+import snob.simulation.snob.profile.Profile;
 
 import java.util.Iterator;
 

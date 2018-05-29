@@ -1,16 +1,16 @@
-package snob.simulation.cyclon;
-
-import java.util.ArrayList;
-import java.util.List;
+package snob.simulation.snob;
 
 import peersim.core.CommonState;
 import peersim.core.Node;
 import snob.simulation.rps.AAgingPartialView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Aging partial view class used within Snob random peer sampling protocol
  */
-public class CyclonPartialView extends AAgingPartialView {
+public class SonPartialView extends AAgingPartialView {
 
 	// #A bounds
 	private static int l;
@@ -24,30 +24,31 @@ public class CyclonPartialView extends AAgingPartialView {
 	 * @param l
 	 *            the maximum size of the samples
 	 */
-	public CyclonPartialView(int c, int l) {
+	public SonPartialView(int c, int l) {
 		super();
-		CyclonPartialView.l = l;
-		CyclonPartialView.c = c;
+		SonPartialView.l = l;
+		SonPartialView.c = c;
 	}
 
 	@Override
 	public List<Node> getSample(Node caller, Node neighbor, boolean isInitiator) {
 		ArrayList<Node> sample = new ArrayList<Node>();
 		ArrayList<Node> clone = new ArrayList<Node>(this.partialView);
+		if(this.partialView.size() > 0) {
+			int sampleSize = clone.size();
+			if (!isInitiator) { // called from the chosen peer
+				sampleSize = Math.min(sampleSize, SonPartialView.l);
+			} else { // called from the initiating peer
+				sampleSize = Math.min(sampleSize - 1, SonPartialView.l - 1);
+				sampleSize = Math.max(sampleSize, 0);
+				clone.remove(0);
+			}
 
-		int sampleSize = clone.size();
-		if (!isInitiator) { // called from the chosen peer
-			sampleSize = Math.min(sampleSize, CyclonPartialView.l);
-		} else { // called from the initiating peer
-			sampleSize = Math.min(sampleSize - 1, CyclonPartialView.l - 1);
-			sampleSize = Math.max(sampleSize, 0);
-			clone.remove(0);
-		}
-
-		while (sample.size() < sampleSize) {
-			int rn = CommonState.r.nextInt(clone.size());
-			sample.add(clone.get(rn));
-			clone.remove(rn);
+			while (sample.size() < sampleSize) {
+				int rn = CommonState.r.nextInt(clone.size());
+				sample.add(clone.get(rn));
+				clone.remove(rn);
+			}
 		}
 		return sample;
 	}
@@ -98,7 +99,7 @@ public class CyclonPartialView extends AAgingPartialView {
 
 		// #4 fill with old elements until the maximum size is reached
 		int i = removedPeer.size() - 1;
-		while (i >= 0 && this.partialView.size() < CyclonPartialView.c) {
+		while (i >= 0 && this.partialView.size() < SonPartialView.c) {
 			if (!this.contains(removedPeer.get(i))) {
 				// #A search the insert position
 				int position = this.ages.size() - 1;
@@ -126,8 +127,8 @@ public class CyclonPartialView extends AAgingPartialView {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		CyclonPartialView cpv = new CyclonPartialView(CyclonPartialView.c,
-				CyclonPartialView.l);
+		SonPartialView cpv = new SonPartialView(SonPartialView.c,
+				SonPartialView.l);
 		cpv.partialView = new ArrayList<Node>(this.partialView);
 		cpv.ages = new ArrayList<Integer>(this.ages);
 		return cpv;

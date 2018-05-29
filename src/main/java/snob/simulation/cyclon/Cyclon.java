@@ -12,7 +12,7 @@ import snob.simulation.rps.IMessage;
 import snob.simulation.rps.IRandomPeerSampling;
 
 /**
- * The Son protocol
+ * The Snob protocol
  */
 public class Cyclon extends ARandomPeerSamplingProtocol implements
 		IRandomPeerSampling {
@@ -30,7 +30,7 @@ public class Cyclon extends ARandomPeerSamplingProtocol implements
 	private static int RND_WALK = 5;
 
 	/**
-	 * Construction of a Son instance
+	 * Construction of a Snob instance
 	 * 
 	 * @param prefix
 	 *            the peersim configuration

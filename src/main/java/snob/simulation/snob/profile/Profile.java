@@ -1,4 +1,4 @@
-package snob.simulation.son.profile;
+package snob.simulation.snob.profile;
 
 
 import org.apache.jena.graph.Node;

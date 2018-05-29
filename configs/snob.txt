@@ -1,5 +1,5 @@
 # network size
-SIZE 196
+SIZE 200
 
 # parameters of periodic execution
 CYCLES 100
@@ -12,17 +12,22 @@ simulation.logtime 1
 ################### protocols ===========================
 protocol.link peersim.core.IdleProtocol
 
-protocol.son snob.simulation.cyclon.Cyclon
-protocol.son.c 5
-protocol.son.l 4
-protocol.son.delta 1
-protocol.son.step 1
-protocol.son.start 2
-protocol.son.linkable link
-protocol.son.fail 0.000
+protocol.snob snob.simulation.snob.Snob
+protocol.snob.rps snob
+protocol.snob.c 5
+protocol.snob.l 4
+protocol.snob.delta 1
+protocol.snob.step 1
+protocol.snob.start 2
+protocol.snob.son true
+protocol.snob.sonc 5
+protocol.snob.sonl 4
+protocol.snob.sondelta 1
+protocol.snob.linkable link
+protocol.snob.fail 0.000
 
 control.o1 snob.simulation.controllers.DynamicNetwork
-control.o1.protocol rps
+control.o1.protocol snob
 control.o1.FINAL
 control.o1.step 30
 # will add directly all nodes to the system instead of adding periodically N nodes out of SIZE nodes
@@ -34,14 +39,14 @@ control.o1.startAdd 0
 ################### initialization ======================
 
 init.sch peersim.edsim.CDScheduler
-init.sch.protocol rps
+init.sch.protocol snob
 init.sch.randstart
 
 ##### Controls #####
 
 
 control.0 snob.simulation.observers.Observer
-control.0.program snob.simulation.observers.program.SnobProgram
-control.0.protocol son
+control.0.program snob.simulation.snob.SnobObserver
+control.0.protocol snob
 control.0.FINAL
 control.0.step 1

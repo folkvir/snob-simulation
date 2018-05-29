@@ -1,5 +1,7 @@
 package snob.simulation.observers.program;
 
+import peersim.core.Network;
+import snob.simulation.cyclon.Cyclon;
 import snob.simulation.observers.DictGraph;
 import snob.simulation.observers.ObserverProgram;
 
@@ -21,11 +23,11 @@ public class VarianceAndArcCountProgram implements ObserverProgram {
 			lastCount = lastCountTemp;
 			lastCountTemp = observer.countArcs();
 		}
-
+		// Cyclon cyc = (Cyclon) observer.nodes.get(Network.get(0).getID()).pss;
 		System.out.println(observer.countArcs() + " "
 				+ observer.variancePartialView() + " "
 				+ observer.meanPartialViewSize() + " " + observer.size() + " "
-				+ firstVar + " " + lastCount);
+				+ firstVar + " " + lastCount + " " /*+ cyc.getPeers(100000).size()*/);
 
 	}
 

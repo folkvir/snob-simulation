@@ -1,4 +1,4 @@
-package snob.simulation.son;
+package snob.simulation.snob;
 
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.*;

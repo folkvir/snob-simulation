@@ -1,6 +1,5 @@
 package snob.simulation.observers;
 
-import snob.simulation.observers.program.*;
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Control;
@@ -49,7 +48,7 @@ public class Observer implements Control {
 				if (d.isUp()) {
 					IRandomPeerSampling pss = (IRandomPeerSampling) n
 							.getProtocol(pid);
-					observer.addStrict(n, pss);
+					observer.addStrict(n, pss, pid);
 					final int size = pss.getAliveNeighbors().size();
 					if (size < min) {
 						min = size;

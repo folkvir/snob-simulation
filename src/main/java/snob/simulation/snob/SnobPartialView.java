@@ -1,4 +1,4 @@
-package snob.simulation.son;
+package snob.simulation.snob;
 
 import peersim.core.CommonState;
 import peersim.core.Node;
@@ -8,26 +8,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Aging partial view class used within Son random peer sampling protocol
+ * Aging partial view class used within Snob random peer sampling protocol
  */
-public class SonPartialView extends AAgingPartialView {
+public class SnobPartialView extends AAgingPartialView {
 
 	// #A bounds
 	private static int l;
 	private static int c;
 
 	/**
-	 * Constructor of the Son's partial view
-	 * 
+	 * Constructor of the Snob's partial view
+	 *
 	 * @param c
 	 *            the maximum size of the partial view
 	 * @param l
 	 *            the maximum size of the samples
 	 */
-	public SonPartialView(int c, int l) {
+	public SnobPartialView(int c, int l) {
 		super();
-		SonPartialView.l = l;
-		SonPartialView.c = c;
+		SnobPartialView.l = l;
+		SnobPartialView.c = c;
+        // System.err.println("SON: c=" + Snob.c + " l=" + Snob.l);
 	}
 
 	@Override
@@ -37,9 +38,9 @@ public class SonPartialView extends AAgingPartialView {
 
 		int sampleSize = clone.size();
 		if (!isInitiator) { // called from the chosen peer
-			sampleSize = Math.min(sampleSize, SonPartialView.l);
+			sampleSize = Math.min(sampleSize, SnobPartialView.l);
 		} else { // called from the initiating peer
-			sampleSize = Math.min(sampleSize - 1, SonPartialView.l - 1);
+			sampleSize = Math.min(sampleSize - 1, SnobPartialView.l - 1);
 			sampleSize = Math.max(sampleSize, 0);
 			clone.remove(0);
 		}
@@ -98,7 +99,7 @@ public class SonPartialView extends AAgingPartialView {
 
 		// #4 fill with old elements until the maximum size is reached
 		int i = removedPeer.size() - 1;
-		while (i >= 0 && this.partialView.size() < SonPartialView.c) {
+		while (i >= 0 && this.partialView.size() < SnobPartialView.c) {
 			if (!this.contains(removedPeer.get(i))) {
 				// #A search the insert position
 				int position = this.ages.size() - 1;
@@ -126,8 +127,8 @@ public class SonPartialView extends AAgingPartialView {
 
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
-		SonPartialView cpv = new SonPartialView(SonPartialView.c,
-				SonPartialView.l);
+		SnobPartialView cpv = new SnobPartialView(SnobPartialView.c,
+				SnobPartialView.l);
 		cpv.partialView = new ArrayList<Node>(this.partialView);
 		cpv.ages = new ArrayList<Integer>(this.ages);
 		return cpv;

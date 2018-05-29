@@ -5,7 +5,7 @@ import java.util.List;
 import peersim.core.Node;
 
 /**
- * Functions related to the aging partial views used within Son or Spray.
+ * Functions related to the aging partial views used within Snob or Spray.
  * Elements inside this partial view are aging out.
  */
 public interface IAgingPartialView {

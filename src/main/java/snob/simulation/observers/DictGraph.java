@@ -1,10 +1,10 @@
 package snob.simulation.observers;
 
-import java.util.*;
-
 import peersim.core.CommonState;
 import peersim.core.Node;
 import snob.simulation.rps.IRandomPeerSampling;
+
+import java.util.*;
 
 /**
  * Created by julian on 26/01/15.
@@ -65,8 +65,8 @@ public class DictGraph {
         this.nodes.clear();
     }
 
-    public void add(Node n, IRandomPeerSampling c) {
-        DictNode node = new DictNode(n.getID());
+    public void add(Node n, IRandomPeerSampling c, int pid) {
+        DictNode node = new DictNode(n.getID(), c, pid);
         for (Node neighbor : c.getPeers(Integer.MAX_VALUE)) {
             node.neighbors.add(neighbor.getID());
         }
@@ -76,8 +76,8 @@ public class DictGraph {
         this.pssList.add(c);
     }
 
-    public void addStrict(Node n, IRandomPeerSampling pss) {
-        DictNode node = new DictNode(n.getID());
+    public void addStrict(Node n, IRandomPeerSampling pss, int pid) {
+        DictNode node = new DictNode(n.getID(), pss, pid);
         for (Node neighbor : pss.getAliveNeighbors()) {
             node.neighbors.add(neighbor.getID());
         }

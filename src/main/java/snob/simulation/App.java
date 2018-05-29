@@ -15,8 +15,8 @@ public class App
 {
     public static void main( String[] args )
     {
-        String[] cyclon = {args[1], "./configs"+args[1]+"-output.txt"};
-        executeConfig(cyclon[0], cyclon[1]);
+        String[] config = {"./configs/"+args[0], "./results/"+args[0]+"-output.txt"};
+        executeConfig(config[0], config[1]);
     }
 
     private static void executeConfig(String config, String output) {

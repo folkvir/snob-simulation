@@ -41,8 +41,8 @@ public abstract class ARandomPeerSamplingProtocol implements IDynamic,
 	 *            configuration of peersim
 	 */
 	public ARandomPeerSamplingProtocol(String prefix) {
-		ARandomPeerSamplingProtocol.pid = Configuration
-				.lookupPid(ARandomPeerSamplingProtocol.PAR_PROT);
+		ARandomPeerSamplingProtocol.pid = Configuration.getPid(prefix + "."
+				+ARandomPeerSamplingProtocol.PAR_PROT);
 		ARandomPeerSamplingProtocol.delta = Configuration.getInt(prefix + "."
 				+ ARandomPeerSamplingProtocol.PAR_DELTA);
 		ARandomPeerSamplingProtocol.start = Configuration.getInt(prefix + "."
