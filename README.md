@@ -7,7 +7,7 @@ Peer-sim simulation of the Snob model
 ```
 mvn install
 mvn package
-mvn exec:exec -Dexec.args="snob.txt" &>/dev/null # redirecting error output to /dev/null
+mvn exec:java@snob #for the snob simulation
 # enable silent maven with -q option: mvn -q ...
 ```
 * Config files must be placed in "./configs" folder.

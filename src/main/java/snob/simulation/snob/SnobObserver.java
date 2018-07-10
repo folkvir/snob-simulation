@@ -1,12 +1,8 @@
 package snob.simulation.snob;
 
-import peersim.core.Node;
+import peersim.core.Network;
 import snob.simulation.observers.DictGraph;
 import snob.simulation.observers.ObserverProgram;
-import peersim.core.Network;
-
-import java.util.Iterator;
-import java.util.List;
 
 public class SnobObserver implements ObserverProgram {
     @Override

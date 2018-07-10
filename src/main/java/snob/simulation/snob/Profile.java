@@ -31,7 +31,7 @@ public class Profile {
     }
 
     public void update(String query) {
-        // System.out.println("Updating the profile with: " + query);
+        System.err.println("Updating the profile with: " + query);
         UUID id = UUID.randomUUID();
         Query q = QueryFactory.create(query);
         queries.put(id, q);
