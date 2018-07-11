@@ -1,33 +1,59 @@
 package snob.simulation.snob;
 
+import org.apache.jena.graph.Triple;
+import org.apache.jena.query.ResultSet;
 import peersim.core.Network;
 import snob.simulation.observers.DictGraph;
 import snob.simulation.observers.ObserverProgram;
 
+import javax.xml.transform.Result;
+import java.util.Iterator;
+
 public class SnobObserver implements ObserverProgram {
+    public SnobObserver(String prefix) {
+
+    }
     @Override
     public void tick(long currentTick, DictGraph observer) {
         if(currentTick > 0) {
-
             // hack to get the proper pid.... fix it for a proper version
             int networksize = Network.size();
-            Snob snob = (Snob) observer.nodes.get(Network.get(0).getID()).pss;
-            if (snob.son) {
-                //List<Node> son = snob.getSonPeers(Integer.MAX_VALUE);
-                //Iterator<Node> it = son.iterator();
-                //while(it.hasNext()) System.err.println(observer.nodes.get(it.next().getID()).neighbors.toString());
+            Snob snob_default = (Snob) observer.nodes.get(Network.get(0).getID()).pss;
+
+            int completeness = 0;
+            for(int i = 0; i < networksize; ++i) {
+                Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
+                Iterator<ResultSet> it = snob.profile.results.values().iterator();
+                // System.err.println("Number of queries for peer-"+Network.get(i).getID() + ": " +snob.profile.results.size());
+                if(snob.profile.results.size() == 1) {
+                    Iterator<ResultSet> itres = snob.profile.results.values().iterator();
+                    while(itres.hasNext()){
+                        ResultSet res = itres.next();
+                        while(res.hasNext()) {
+                            completeness++;
+                            res.next();
+                        }
+                    }
+                } else {
+                    System.err.println("PROBLEM: A PEER AS MORE THAN ONE QUERY!!!!!");
+                }
+            }
+
+            if (snob_default.son) {
                 System.out.println(currentTick
                         + ", " + observer.size()
                         + ", " + observer.countPartialViewsWithDuplicates()
                         + ", " + observer.meanPartialViewSize()
-                        + ", " + snob.getPeers(Integer.MAX_VALUE).size()
-                        + ", " + snob.getSonPeers(Integer.MAX_VALUE).size());
+                        + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
+                        + ", " + snob_default.getSonPeers(Integer.MAX_VALUE).size()
+                        + ", " + completeness);
             } else {
                 System.out.println(currentTick
                         + ", " + observer.size()
                         + ", " + observer.countPartialViewsWithDuplicates()
                         + ", " + observer.meanPartialViewSize()
-                        + ", " + snob.getPeers(Integer.MAX_VALUE).size());
+                        + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
+                        + ", " + completeness);
             }
         }
     }

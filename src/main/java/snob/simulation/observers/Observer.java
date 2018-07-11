@@ -8,6 +8,8 @@ import peersim.core.Node;
 import snob.simulation.rps.IDynamic;
 import snob.simulation.rps.IRandomPeerSampling;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Created by julian on 3/15/15.
  */
@@ -26,12 +28,16 @@ public class Observer implements Control {
 
 		final Class<?> programClass = Configuration.getClass(name + "." + PROG);
 		try {
-			this.program = (ObserverProgram) programClass.newInstance();
+			this.program = (ObserverProgram) programClass.getDeclaredConstructor(String.class).newInstance(name);
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 			throw new RuntimeException("Could not determine Observer program");
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
 	}
 

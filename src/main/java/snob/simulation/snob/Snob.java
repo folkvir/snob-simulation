@@ -1,12 +1,15 @@
 package snob.simulation.snob;
 
+import org.apache.jena.graph.Triple;
 import peersim.config.Configuration;
 import peersim.core.CommonState;
 import peersim.core.Node;
 import snob.simulation.rps.ARandomPeerSamplingProtocol;
 import snob.simulation.rps.IMessage;
 import snob.simulation.rps.IRandomPeerSampling;
+import snob.simulation.snob.SnobTpqsMessage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -31,12 +34,14 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
     public static int sonl;
 
 	// Profile of the peer
-	public static Profile profile;
+	public Profile profile;
 
 	// #C local variables
     public SnobPartialView partialView;
     public SonPartialView sonPartialView;
     public static int RND_WALK = 5;
+    public String prefix;
+
 	/**
 	 * Construction of a Snob instance, By default it is a Cyclon implementation wihtout using the overlay
 	 * 
@@ -45,20 +50,24 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 	 */
 	public Snob(String prefix) {
 		super(prefix);
+        this.prefix = prefix;
 		Snob.c = Configuration.getInt(prefix + "." + PAR_C);
         Snob.l = Configuration.getInt(prefix + "." + PAR_L);
         Snob.sonc = Configuration.getInt(prefix + "." + PAR_SON_C);
         Snob.sonl = Configuration.getInt(prefix + "." + PAR_SON_L);
         Snob.son = Configuration.getBoolean(prefix + "." + PAR_SON);
 		this.partialView = new SnobPartialView(Snob.c, Snob.l);
-        if(Snob.son) this.sonPartialView = new SonPartialView(Snob.sonc, Snob.sonl);
-        this.profile = new Profile();
-	}
+        if(Snob.son) {
+            this.sonPartialView = new SonPartialView(Snob.sonc, Snob.sonl);
+        }
+        try {
+            this.profile = new Profile();
+            System.err.println("Creating the profile...");
+        } catch (Exception e) {
+            System.err.println(e);
+        }
 
-	public Snob() {
-		super();
-		this.partialView = new SnobPartialView(Snob.c, Snob.l);
-        if(Snob.son) this.sonPartialView = new SonPartialView(Snob.sonc, Snob.sonl);
+
 	}
 
 	@Override
@@ -107,12 +116,41 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
                 this.sonPartialView.removeNode(qSon);
             }
         }
-		// perform the execution of all queries
-        // ...
+
+        // -------- QUERY EXECUTION MODEL -------
+
+        // 1 - send tpqs to neighbours and receive responses
+        List<Node> rps_neigh = this.getPeers(1000000);
+        List<Node> son_neigh = this.getSonPeers(1000000);
+        for (Node node1 : rps_neigh) {
+            Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
+            IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
+            // 2 - insert responses into our datastore
+            this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+        }
+        for (Node node1 : son_neigh) {
+            Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
+            IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
+            // 2 - insert responses into our datastore
+            this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+        }
+
+		// 3 - perform the execution of all queries
         profile.executeAll();
 	}
 
-
+    public IMessage onTpqs(Node origin, IMessage message) {
+        Object receivedTriples = (List<Triple>) message.getPayload();
+        List<Triple> result = new ArrayList<>();
+        Iterator<Triple> it = ((List) receivedTriples).iterator();
+        while(it.hasNext()) {
+            Iterator<Triple> matchingTriples = this.profile.datastore.getTriplesMatchingTriplePattern(it.next());
+            while(matchingTriples.hasNext()) {
+                result.add(matchingTriples.next());
+            }
+        }
+        return new SnobTpqsMessage(result);
+    }
 
 	public IMessage onPeriodicCall(Node origin, IMessage message) {
 		List<Node> samplePrime = this.partialView.getSample(this.node, origin,
@@ -174,7 +212,7 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 	@Override
 	public IRandomPeerSampling clone() {
 		try {
-			Snob s = new Snob();
+			Snob s = new Snob(this.prefix);
 			s.partialView = (SnobPartialView) this.partialView.clone();
             if(Snob.son) s.sonPartialView = (SonPartialView) this.sonPartialView.clone();
 			return s;

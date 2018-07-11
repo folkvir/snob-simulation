@@ -21,7 +21,7 @@ public class Profile {
     public Map<UUID, ResultSet> results;
 
     // Datastore
-    public static Datastore datastore;
+    public Datastore datastore;
 
     public Profile() {
         this.tpqs = new ArrayList<>();
@@ -47,6 +47,8 @@ public class Profile {
     }
 
     public void executeAll() {
+        // this.queries.forEach((k,v)->System.err.println(k.toString() + v.toString()));
+        // System.err.println("Executing all queries [" + this.queries.values().size() + "]...");
         Iterator<Map.Entry<UUID, Query>> it = this.queries.entrySet().iterator();
         while(it.hasNext()){
             Map.Entry e = it.next();

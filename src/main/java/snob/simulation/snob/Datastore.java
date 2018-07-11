@@ -9,6 +9,7 @@ import org.apache.jena.sparql.syntax.Template;
 import org.apache.jena.util.FileManager;
 
 import java.util.Iterator;
+import java.util.List;
 
 public class Datastore {
     public Dataset dataset;
@@ -22,6 +23,25 @@ public class Datastore {
         this.dataset.begin(ReadWrite.WRITE);
         try {
             Model tdb = loadModel(filename, this.dataset);
+            this.dataset.commit();
+        } catch(Exception e) {
+            e.printStackTrace();
+            this.dataset.abort();
+        }
+        this.dataset.end();
+    }
+
+    public void insertTriples(List<Triple> triples) {
+        this.dataset.begin(ReadWrite.WRITE);
+        try {
+            Iterator<Triple> it = triples.iterator();
+            while(it.hasNext()) {
+                Triple p = it.next();
+                if(!this.dataset.asDatasetGraph().getDefaultGraph().contains(p)) {
+                    // System.err.println("Inserting triple: " + p.toString());
+                    this.dataset.asDatasetGraph().getDefaultGraph().add(p);
+                }
+            }
             this.dataset.commit();
         } catch(Exception e) {
             e.printStackTrace();

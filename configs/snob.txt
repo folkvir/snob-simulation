@@ -2,7 +2,7 @@
 SIZE 200
 
 # parameters of periodic execution
-CYCLES 100
+CYCLES 1000
 
 random.seed 1237567890
 network.size SIZE
@@ -54,5 +54,7 @@ control.0.step 1
 control.1 snob.simulation.observers.Observer
 control.1.program snob.simulation.snob.SnobInit
 control.1.protocol snob
+control.1.qlimit -1
+control.1.dlimit 130
 control.1.FINAL
 control.1.step 1
