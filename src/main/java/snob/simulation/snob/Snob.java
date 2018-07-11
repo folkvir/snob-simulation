@@ -123,18 +123,22 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
         List<Node> rps_neigh = this.getPeers(1000000);
         List<Node> son_neigh = this.getSonPeers(1000000);
         for (Node node1 : rps_neigh) {
-            Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
-            IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
-            // 2 - insert responses into our datastore
-            this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
-            this.messages++;
+        	if(this.profile.tpqs.size() > 0) {
+				Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
+				IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
+				// 2 - insert responses into our datastore
+				this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+				this.messages++;
+			}
         }
         for (Node node1 : son_neigh) {
-            Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
-            IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
-            // 2 - insert responses into our datastore
-            this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
-            this.messages++;
+        	if(this.profile.tpqs.size() > 0) {
+				Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
+				IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
+				// 2 - insert responses into our datastore
+				this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+				this.messages++;
+			}
         }
 
 		// 3 - perform the execution of all queries
