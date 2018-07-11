@@ -160,6 +160,42 @@
                         </arguments>
                     </configuration>
                 </execution>
+                <execution>
+                    <id>snob-50</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-50.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>snob-100</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-100.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>snob-200</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-200.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
             </executions>
             <configuration>
               <mainClass>snob.simulation.App</mainClass>

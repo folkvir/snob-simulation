@@ -1,12 +1,10 @@
 package snob.simulation.snob;
 
-import org.apache.jena.graph.Triple;
 import org.apache.jena.query.ResultSet;
 import peersim.core.Network;
 import snob.simulation.observers.DictGraph;
 import snob.simulation.observers.ObserverProgram;
 
-import javax.xml.transform.Result;
 import java.util.Iterator;
 
 public class SnobObserver implements ObserverProgram {
@@ -21,8 +19,11 @@ public class SnobObserver implements ObserverProgram {
             Snob snob_default = (Snob) observer.nodes.get(Network.get(0).getID()).pss;
 
             int completeness = 0;
+            int messages = 0;
             for(int i = 0; i < networksize; ++i) {
                 Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
+                messages += snob.messages;
+                snob.messages = 0;
                 Iterator<ResultSet> it = snob.profile.results.values().iterator();
                 // System.err.println("Number of queries for peer-"+Network.get(i).getID() + ": " +snob.profile.results.size());
                 if(snob.profile.results.size() == 1) {
@@ -34,11 +35,9 @@ public class SnobObserver implements ObserverProgram {
                             res.next();
                         }
                     }
-                } else {
-                    System.err.println("PROBLEM: A PEER AS MORE THAN ONE QUERY!!!!!");
                 }
             }
-
+            System.err.println("Number of messages in the network: " + messages);
             if (snob_default.son) {
                 System.out.println(currentTick
                         + ", " + observer.size()
@@ -46,14 +45,16 @@ public class SnobObserver implements ObserverProgram {
                         + ", " + observer.meanPartialViewSize()
                         + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
                         + ", " + snob_default.getSonPeers(Integer.MAX_VALUE).size()
-                        + ", " + completeness);
+                        + ", " + completeness
+                        + ", " + messages);
             } else {
                 System.out.println(currentTick
                         + ", " + observer.size()
                         + ", " + observer.countPartialViewsWithDuplicates()
                         + ", " + observer.meanPartialViewSize()
                         + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
-                        + ", " + completeness);
+                        + ", " + completeness
+                        + ", " + messages);
             }
         }
     }

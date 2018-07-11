@@ -7,7 +7,6 @@ import peersim.core.Node;
 import snob.simulation.rps.ARandomPeerSamplingProtocol;
 import snob.simulation.rps.IMessage;
 import snob.simulation.rps.IRandomPeerSampling;
-import snob.simulation.snob.SnobTpqsMessage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +40,7 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
     public SonPartialView sonPartialView;
     public static int RND_WALK = 5;
     public String prefix;
+    public int messages = 0;
 
 	/**
 	 * Construction of a Snob instance, By default it is a Cyclon implementation wihtout using the overlay
@@ -127,12 +127,14 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
             IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
             // 2 - insert responses into our datastore
             this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+            this.messages++;
         }
         for (Node node1 : son_neigh) {
             Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
             IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
             // 2 - insert responses into our datastore
             this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+            this.messages++;
         }
 
 		// 3 - perform the execution of all queries
