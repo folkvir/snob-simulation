@@ -79,13 +79,13 @@ public class SnobInit implements ObserverProgram {
 
             // diseasome queries
             JSONParser parser = new JSONParser();
-            Vector<String> queriesDiseasome = new Vector();
-            Vector<String> queriesLinkedmdb = new Vector();
+            Vector<JSONObject> queriesDiseasome = new Vector();
+            Vector<JSONObject> queriesLinkedmdb = new Vector();
             try (Reader is = new FileReader(diseasomeQuery)) {
                 JSONArray jsonArray = (JSONArray) parser.parse(is);
                 jsonArray.stream().forEach((q) -> {
                     JSONObject j = (JSONObject) q;
-                    queriesDiseasome.add(j.get("query").toString());
+                    queriesDiseasome.add(j);
                 });
 
             } catch (IOException | ParseException e) {
@@ -96,7 +96,7 @@ public class SnobInit implements ObserverProgram {
                 JSONArray jsonArray = (JSONArray) parser.parse(is);
                 jsonArray.stream().forEach((q) -> {
                     JSONObject j = (JSONObject) q;
-                    queriesLinkedmdb.add(j.get("query").toString());
+                    queriesLinkedmdb.add(j);
                 });
             } catch (IOException | ParseException e) {
                 e.printStackTrace();
@@ -105,14 +105,18 @@ public class SnobInit implements ObserverProgram {
             queriesDiseasome.addAll(queriesLinkedmdb);
             Collections.shuffle(queriesDiseasome);
 
-
             int pickedQuery = 0;
             peersPicked = 0;
             this.qlimit = (this.qlimit == -1)?queriesDiseasome.size():this.qlimit;
+            for(int i = 0; i < networksize; ++i) {
+                Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
+                System.err.println(i);
+                snob.profile.qlimit = this.qlimit;
+            }
             System.err.println("Number of queries to load: [" + this.qlimit + "/" + queriesDiseasome.size() + "]...");
             while(pickedQuery < this.qlimit && pickedQuery < queriesDiseasome.size()) {
                 System.err.println("Loading query into peer:" + peersPicked);
-                peers.get(peersPicked).profile.update(queriesDiseasome.get(pickedQuery));
+                peers.get(peersPicked).profile.update(queriesDiseasome.get(pickedQuery).get("query").toString(), (long) queriesDiseasome.get(pickedQuery).get("card"));
                 System.err.println("Number of queries for peer-" + peersPicked + ": " + peers.get(peersPicked).profile.queries.size());
                 peersPicked++;
                 if(peersPicked > peers.size() - 1) peersPicked = 0;

@@ -6,55 +6,64 @@ import snob.simulation.observers.DictGraph;
 import snob.simulation.observers.ObserverProgram;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 public class SnobObserver implements ObserverProgram {
-    public SnobObserver(String prefix) {
-
-    }
+    public SnobObserver(String p) {}
     @Override
     public void tick(long currentTick, DictGraph observer) {
         if(currentTick > 0) {
             // hack to get the proper pid.... fix it for a proper version
             int networksize = Network.size();
-            Snob snob_default = (Snob) observer.nodes.get(Network.get(0).getID()).pss;
+            try {
+                Snob snob_default = (Snob) observer.nodes.get(Network.get(0).getID()).pss;
 
-            int completeness = 0;
-            int messages = 0;
-            for(int i = 0; i < networksize; ++i) {
-                Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
-                messages += snob.messages;
-                snob.messages = 0;
-                Iterator<ResultSet> it = snob.profile.results.values().iterator();
-                // System.err.println("Number of queries for peer-"+Network.get(i).getID() + ": " +snob.profile.results.size());
-                if(snob.profile.results.size() == 1) {
-                    Iterator<ResultSet> itres = snob.profile.results.values().iterator();
-                    while(itres.hasNext()){
-                        ResultSet res = itres.next();
-                        while(res.hasNext()) {
-                            completeness++;
-                            res.next();
+                long completeness = 0;
+                long messages = 0;
+                for(int i = 0; i < networksize; ++i) {
+                    Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
+                    messages += snob.messages;
+                    snob.messages = 0;
+                    Iterator<UUID> keys = snob.profile.queries.keySet().iterator();
+                    // System.err.println("Number of queries for peer-"+Network.get(i).getID() + ": " +snob.profile.results.size());
+                    if(keys.hasNext()) {
+                        UUID key = keys.next();
+                        QuerySnob query = snob.profile.queries.get(key);
+                        ResultSet res = query.results;
+                        if(res != null) {
+                            long cpt = 0;
+                            while(res.hasNext()) {
+                                res.next();
+                                cpt++;
+                            }
+                            completeness = cpt / query.cardinality * 100;
                         }
+
                     }
                 }
-            }
-            System.err.println("Number of messages in the network: " + messages);
-            if (snob_default.son) {
-                System.out.println(currentTick
-                        + ", " + observer.size()
-                        + ", " + observer.countPartialViewsWithDuplicates()
-                        + ", " + observer.meanPartialViewSize()
-                        + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
-                        + ", " + snob_default.getSonPeers(Integer.MAX_VALUE).size()
-                        + ", " + completeness
-                        + ", " + messages);
-            } else {
-                System.out.println(currentTick
-                        + ", " + observer.size()
-                        + ", " + observer.countPartialViewsWithDuplicates()
-                        + ", " + observer.meanPartialViewSize()
-                        + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
-                        + ", " + completeness
-                        + ", " + messages);
+                completeness = completeness / snob_default.profile.qlimit;
+                System.err.println("Global Completeness in the network: " + completeness + "% ("+ snob_default.profile.qlimit + "," + networksize + ")");
+                System.err.println("Number of messages in the network: " + messages);
+                if (snob_default.son) {
+                    System.out.println(currentTick
+                            + ", " + observer.size()
+                            + ", " + observer.countPartialViewsWithDuplicates()
+                            + ", " + observer.meanPartialViewSize()
+                            + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
+                            + ", " + snob_default.getSonPeers(Integer.MAX_VALUE).size()
+                            + ", " + completeness
+                            + ", " + messages);
+                } else {
+                    System.out.println(currentTick
+                            + ", " + observer.size()
+                            + ", " + observer.countPartialViewsWithDuplicates()
+                            + ", " + observer.meanPartialViewSize()
+                            + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
+                            + ", " + completeness
+                            + ", " + messages);
+                }
+            } catch(Exception e) {
+                System.err.println("ERROR:" + e);
             }
         }
     }

@@ -19,25 +19,39 @@ public class Profile {
     public int WEIGH_SUBSET = 1;
 
     public List<Triple> tpqs;
-    public Map<UUID, Query> queries;
-    public Map<UUID, ResultSet> results;
-
+    public Map<UUID, QuerySnob> queries;
+    public long qlimit = 1; // number of queries in the network
     // Datastore
     public Datastore datastore;
 
     public Profile() {
         this.tpqs = new ArrayList<>();
         this.queries = new HashMap<>();
-        this.results = new HashMap<>();
         this.datastore = new Datastore();
     }
 
     public void update(String query) {
         System.err.println("Updating the profile with: " + query);
         UUID id = UUID.randomUUID();
-        Query q = QueryFactory.create(query);
+        QuerySnob q = new QuerySnob(query);
         queries.put(id, q);
-        ElementWalker.walk(q.getQueryPattern(), new ElementVisitorBase() {
+        ElementWalker.walk(q.getQuery().getQueryPattern(), new ElementVisitorBase() {
+            @Override
+            public void visit(ElementPathBlock elementTriplesBlock) {
+                Iterator<TriplePath> it = elementTriplesBlock.patternElts();
+                while(it.hasNext()) {
+                    tpqs.add(it.next().asTriple());
+                }
+            }
+        });
+    }
+
+    public void update(String query, long card) {
+        System.err.println("Updating the profile with: " + query);
+        UUID id = UUID.randomUUID();
+        QuerySnob q = new QuerySnob(query, card);
+        queries.put(id, q);
+        ElementWalker.walk(q.getQuery().getQueryPattern(), new ElementVisitorBase() {
             @Override
             public void visit(ElementPathBlock elementTriplesBlock) {
                 Iterator<TriplePath> it = elementTriplesBlock.patternElts();
@@ -51,11 +65,11 @@ public class Profile {
     public void executeAll() {
         // this.queries.forEach((k,v)->System.err.println(k.toString() + v.toString()));
         // System.err.println("Executing all queries [" + this.queries.values().size() + "]...");
-        Iterator<Map.Entry<UUID, Query>> it = this.queries.entrySet().iterator();
+        Iterator<Map.Entry<UUID, QuerySnob>> it = this.queries.entrySet().iterator();
         while(it.hasNext()){
             Map.Entry e = it.next();
-            ResultSet res = this.datastore.select((Query) e.getValue());
-            this.results.put((UUID) e.getKey(), res);
+            ResultSet res = this.datastore.select(((QuerySnob) e.getValue()).getQuery());
+            this.queries.get(e.getKey()).results = res;
         }
     }
 
