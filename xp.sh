@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-mvn clean
-mvn package
+sh install.sh
 
 mvn exec:java@snob-50
 mvn exec:java@snob-100
