@@ -55,6 +55,6 @@ control.1 snob.simulation.observers.Observer
 control.1.program snob.simulation.snob.SnobInit
 control.1.protocol snob
 control.1.qlimit 10
-control.1.dlimit 130
+control.1.dlimit
 control.1.FINAL
 control.1.step 1
