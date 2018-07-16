@@ -1,16 +1,31 @@
 package snob.simulation;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.jena.graph.Triple;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFormatter;
 import org.apache.jena.sparql.core.Var;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import snob.simulation.snob.Datastore;
 import snob.simulation.snob.Profile;
+import snob.simulation.snob.QuerySnob;
 
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Vector;
+import java.util.stream.Stream;
 
 /**
  * Unit test for simple App.
@@ -131,5 +146,99 @@ public class AppTest
             count++;
         }
         Assert.assertEquals(3, count);
+    }
+
+    @Ignore @Test
+    public void GenerateDiseasomeDataset() {
+        Datastore d = new Datastore();
+        String diseasome = System.getProperty("user.dir") + "/datasets/data/diseasome/fragments/";
+        Vector filenames = new Vector();
+        try (Stream<Path> paths = Files.walk(Paths.get(diseasome))) {
+            paths.filter(Files::isRegularFile).forEach((fileName)->filenames.add(fileName));
+        } catch(IOException e) {
+            System.err.println(e.toString());
+        }
+        filenames.forEach(f -> {d.update(f.toString());});
+
+        // once all fragments loaded
+        String diseasomeQuery = System.getProperty("user.dir") + "/datasets/data/diseasome/queries/queries.json";
+        String diseasomeQueryGenerated = System.getProperty("user.dir") + "/datasets/data/diseasome/queries/queries_jena_generated.json";
+        JSONParser parser = new JSONParser();
+        try (Reader is = new FileReader(diseasomeQuery)) {
+            JSONArray jsonArray = (JSONArray) parser.parse(is);
+            jsonArray.stream().forEach((q) -> {
+                JSONObject j = (JSONObject) q;
+                QuerySnob query = new QuerySnob(j);
+                ResultSet res = d.select(query.realQuery);
+                long cpt = 0;
+                // write to a ByteArrayOutputStream
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                ResultSetFormatter.outputAsJSON(outputStream, res);
+                String json = new String(outputStream.toByteArray());
+                JSONObject resultJson = null;
+                try {
+                    resultJson = (JSONObject) parser.parse(json);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                JSONArray results = (JSONArray) ((JSONObject) resultJson.get("results")).get("bindings");
+                j.put("card", results.size());
+                j.remove("results");
+                j.put("results", resultJson.get("results"));
+            });
+           Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(diseasomeQueryGenerated), "utf-8"));
+            jsonArray.writeJSONString(writer);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Ignore @Test
+    public void GenerateLinkedmdbDataset() {
+        Datastore d = new Datastore();
+        String diseasome = System.getProperty("user.dir") + "/datasets/data/linkedmdb/fragments/";
+        Vector filenames = new Vector();
+        try (Stream<Path> paths = Files.walk(Paths.get(diseasome))) {
+            paths.filter(Files::isRegularFile).forEach((fileName)->filenames.add(fileName));
+        } catch(IOException e) {
+            System.err.println(e.toString());
+        }
+        filenames.forEach(f -> {d.update(f.toString());});
+
+        // once all fragments loaded
+        String linkedmdbQuery = System.getProperty("user.dir") + "/datasets/data/linkedmdb/queries/queries.json";
+        String linkedmdbQueryGenerated = System.getProperty("user.dir") + "/datasets/data/linkedmdb/queries/queries_jena_generated.json";
+        JSONParser parser = new JSONParser();
+        try (Reader is = new FileReader(linkedmdbQuery)) {
+            JSONArray jsonArray = (JSONArray) parser.parse(is);
+            jsonArray.stream().forEach((q) -> {
+                JSONObject j = (JSONObject) q;
+                QuerySnob query = new QuerySnob(j);
+                ResultSet res = d.select(query.realQuery);
+                long cpt = 0;
+                // write to a ByteArrayOutputStream
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+                ResultSetFormatter.outputAsJSON(outputStream, res);
+                String json = new String(outputStream.toByteArray());
+                JSONObject resultJson = null;
+                try {
+                    resultJson = (JSONObject) parser.parse(json);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                JSONArray results = (JSONArray) ((JSONObject) resultJson.get("results")).get("bindings");
+                j.put("card", results.size());
+                j.remove("results");
+                j.put("results", resultJson.get("results"));
+            });
+            Writer writer = new BufferedWriter(new OutputStreamWriter(
+                    new FileOutputStream(linkedmdbQueryGenerated), "utf-8"));
+            jsonArray.writeJSONString(writer);
+        } catch (IOException | ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 
 public class QuerySnob {
     public String query;
-    private Query realQuery;
+    public Query realQuery;
     public long cardinality;
     public ResultSet results;
 

@@ -44,9 +44,9 @@ public class SnobInit implements ObserverProgram {
             int networksize = Network.size();
             System.err.println("[INIT:SNOB] Initialized data for: " + networksize + " peers..." + observer.nodes.size());
             String diseasome = System.getProperty("user.dir") + "/datasets/data/diseasome/fragments/";
-            String diseasomeQuery = System.getProperty("user.dir") + "/datasets/data/diseasome/queries/queries.json";
+            String diseasomeQuery = System.getProperty("user.dir") + "/datasets/data/diseasome/queries/queries_jena_generated.json";
             String linkedmdb = System.getProperty("user.dir") + "/datasets/data/linkedmdb/fragments/";
-            String linkedmdbQuery = System.getProperty("user.dir") + "/datasets/data/linkedmdb/queries/queries.json";
+            String linkedmdbQuery = System.getProperty("user.dir") + "/datasets/data/linkedmdb/queries/queries_jena_generated.json";
 
             Vector filenames = new Vector();
             try (Stream<Path> paths = Files.walk(Paths.get(diseasome))) {
