@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.ResultSetFormatter;
@@ -148,7 +149,7 @@ public class AppTest
         Assert.assertEquals(3, count);
     }
 
-    @Ignore @Test
+    @Test
     public void GenerateDiseasomeDataset() {
         Datastore d = new Datastore();
         String diseasome = System.getProperty("user.dir") + "/datasets/data/diseasome/fragments/";
@@ -166,7 +167,7 @@ public class AppTest
         JSONParser parser = new JSONParser();
         try (Reader is = new FileReader(diseasomeQuery)) {
             JSONArray jsonArray = (JSONArray) parser.parse(is);
-            jsonArray.stream().forEach((q) -> {
+            jsonArray.forEach((q) -> {
                 JSONObject j = (JSONObject) q;
                 QuerySnob query = new QuerySnob(j);
                 ResultSet res = d.select(query.realQuery);
@@ -187,15 +188,19 @@ public class AppTest
                 j.remove("results");
                 j.put("results", resultJson.get("results"));
             });
-           Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(diseasomeQueryGenerated), "utf-8"));
-            jsonArray.writeJSONString(writer);
+            File file =  new File(diseasomeQueryGenerated);
+            file.createNewFile();
+            // creates a FileWriter Object
+            FileWriter writer = new FileWriter(file);
+            writer.write(jsonArray.toString());
+            writer.flush();
+            writer.close();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
     }
 
-    @Ignore @Test
+    @Test
     public void GenerateLinkedmdbDataset() {
         Datastore d = new Datastore();
         String diseasome = System.getProperty("user.dir") + "/datasets/data/linkedmdb/fragments/";
@@ -213,7 +218,7 @@ public class AppTest
         JSONParser parser = new JSONParser();
         try (Reader is = new FileReader(linkedmdbQuery)) {
             JSONArray jsonArray = (JSONArray) parser.parse(is);
-            jsonArray.stream().forEach((q) -> {
+            jsonArray.forEach((q) -> {
                 JSONObject j = (JSONObject) q;
                 QuerySnob query = new QuerySnob(j);
                 ResultSet res = d.select(query.realQuery);
@@ -234,9 +239,13 @@ public class AppTest
                 j.remove("results");
                 j.put("results", resultJson.get("results"));
             });
-            Writer writer = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(linkedmdbQueryGenerated), "utf-8"));
-            jsonArray.writeJSONString(writer);
+            File file =  new File(linkedmdbQueryGenerated);
+            file.createNewFile();
+            // creates a FileWriter Object
+            FileWriter writer = new FileWriter(file);
+            writer.write(jsonArray.toString());
+            writer.flush();
+            writer.close();
         } catch (IOException | ParseException e) {
             e.printStackTrace();
         }
