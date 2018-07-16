@@ -23,7 +23,6 @@ public class SnobObserver implements ObserverProgram {
                 for(int i = 0; i < networksize; ++i) {
                     Snob snob = (Snob) observer.nodes.get(Network.get(i).getID()).pss;
                     messages += snob.messages;
-                    snob.messages = 0;
                     Iterator<UUID> keys = snob.profile.queries.keySet().iterator();
                     // System.err.println("Number of queries for peer-"+Network.get(i).getID() + ": " +snob.profile.results.size());
                     if(keys.hasNext()) {
@@ -59,6 +58,7 @@ public class SnobObserver implements ObserverProgram {
                             + ", " + observer.countPartialViewsWithDuplicates()
                             + ", " + observer.meanPartialViewSize()
                             + ", " + snob_default.getPeers(Integer.MAX_VALUE).size()
+                            + ", " + 0
                             + ", " + completeness
                             + ", " + messages);
                 }

@@ -79,6 +79,8 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 	}
 
 	public void periodicCall() {
+		this.messages = 0; // reset the number of messages
+
 	    // do the periodic shuffling of the rps
 		if (this.isUp() && this.partialView.size() > 0) {
 		    // do the periodic shuffling for Cyclon
@@ -121,7 +123,6 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 
         // 1 - send tpqs to neighbours and receive responses
         List<Node> rps_neigh = this.getPeers(1000000);
-        List<Node> son_neigh = this.getSonPeers(1000000);
         for (Node node1 : rps_neigh) {
         	if(this.profile.tpqs.size() > 0) {
 				Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
@@ -131,15 +132,18 @@ public class Snob extends ARandomPeerSamplingProtocol implements IRandomPeerSamp
 				this.messages++;
 			}
         }
-        for (Node node1 : son_neigh) {
-        	if(this.profile.tpqs.size() > 0) {
-				Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
-				IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
-				// 2 - insert responses into our datastore
-				this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
-				this.messages++;
+		if(Snob.son && this.isUp() && this.sonPartialView.size() > 0){
+            List<Node> son_neigh = this.getSonPeers(1000000);
+			for (Node node1 : son_neigh) {
+				if(this.profile.tpqs.size() > 0) {
+					Snob snob = (Snob) node1.getProtocol(ARandomPeerSamplingProtocol.pid);
+					IMessage received = snob.onTpqs(this.node, new SnobTpqsMessage(this.profile.tpqs));
+					// 2 - insert responses into our datastore
+					this.profile.datastore.insertTriples((List<Triple>) received.getPayload());
+					this.messages++;
+				}
 			}
-        }
+		}
 
 		// 3 - perform the execution of all queries
         profile.executeAll();

@@ -14,13 +14,13 @@ protocol.link peersim.core.IdleProtocol
 
 protocol.snob snob.simulation.snob.Snob
 protocol.snob.rps snob
-protocol.snob.c 10
+protocol.snob.c 5
 protocol.snob.l 4
 protocol.snob.delta 1
 protocol.snob.step 1
 protocol.snob.start 2
-protocol.snob.son false
-protocol.snob.sonc 0
+protocol.snob.son true
+protocol.snob.sonc 5
 protocol.snob.sonl 4
 protocol.snob.sondelta 1
 protocol.snob.linkable link
@@ -54,7 +54,7 @@ control.0.step 1
 control.1 snob.simulation.observers.Observer
 control.1.program snob.simulation.snob.SnobInit
 control.1.protocol snob
-control.1.qlimit 10
-control.1.dlimit 50
+control.1.qlimit 100
+control.1.dlimit -1
 control.1.FINAL
 control.1.step 1

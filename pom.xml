@@ -177,7 +177,7 @@
                     <configuration>
                         <mainClass>snob.simulation.App</mainClass>
                         <arguments>
-                            <argument>snob-50.txt</argument>
+                            <argument>snob-50-rps+son.txt</argument>
                         </arguments>
                     </configuration>
                 </execution>
@@ -189,7 +189,7 @@
                     <configuration>
                         <mainClass>snob.simulation.App</mainClass>
                         <arguments>
-                            <argument>snob-100.txt</argument>
+                            <argument>snob-100-rps+son.txt</argument>
                         </arguments>
                     </configuration>
                 </execution>
@@ -201,7 +201,43 @@
                     <configuration>
                         <mainClass>snob.simulation.App</mainClass>
                         <arguments>
-                            <argument>snob-200.txt</argument>
+                            <argument>snob-200-rps+son.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>snob-50-rps</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-50-rps.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>snob-100-rps</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-100-rps.txt</argument>
+                        </arguments>
+                    </configuration>
+                </execution>
+                <execution>
+                    <id>snob-200-rps</id>
+                    <goals>
+                        <goal>java</goal>
+                    </goals>
+                    <configuration>
+                        <mainClass>snob.simulation.App</mainClass>
+                        <arguments>
+                            <argument>snob-200-rps.txt</argument>
                         </arguments>
                     </configuration>
                 </execution>
