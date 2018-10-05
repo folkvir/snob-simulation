@@ -2,7 +2,7 @@
 SIZE 200
 
 # parameters of periodic execution
-CYCLES 200
+CYCLES 100
 
 random.seed 1237567890
 network.size SIZE
