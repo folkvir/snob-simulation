@@ -35,7 +35,14 @@ public class SnobObserver implements ObserverProgram {
                                 res.next();
                                 cpt++;
                             }
-                            completeness += (cpt+1) / (query.cardinality+1) * 100;
+                            if (cpt != 0 && query.cardinality != 0) {
+                              completeness += (cpt) / (query.cardinality) * 100;
+                            } else if (cpt == 0 && query.cardinality == 0) {
+                              completeness += 100;
+                            } else {
+                              completeness += 0;
+                            }
+
                         }
 
                     }
