@@ -1,6 +1,4 @@
-
-
-
+round, size, pvdup, meanpv, rpsneigh, sonneig, completeness, messages
 1, 200, 0, 2.05, 0, 0, 0, 0
 2, 200, 0, 2.05, 0, 0, 0, 0
 3, 200, 0, 3.975, 3, 5, 0, 336
