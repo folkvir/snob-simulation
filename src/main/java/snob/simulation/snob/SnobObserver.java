@@ -42,9 +42,7 @@ public class SnobObserver implements ObserverProgram {
                             } else {
                               completeness += 0;
                             }
-
                         }
-
                     }
                 }
                 completeness = completeness / snob_default.profile.qlimit;

@@ -14,7 +14,7 @@ protocol.link peersim.core.IdleProtocol
 
 protocol.snob snob.simulation.snob.Snob
 protocol.snob.rps snob
-protocol.snob.c 10
+protocol.snob.c 5
 protocol.snob.l 4
 protocol.snob.delta 1
 protocol.snob.step 1
